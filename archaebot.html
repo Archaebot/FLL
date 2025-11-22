@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Archaebot – Robot Archaeologist</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: 
+                linear-gradient(135deg, rgba(139, 90, 43, 0.1) 0%, rgba(160, 120, 80, 0.1) 50%, rgba(180, 140, 100, 0.1) 100%),
+                repeating-linear-gradient(
+                    0deg,
+                    #D4A574 0px,
+                    #D4A574 2px,
+                    #E8D5B7 2px,
+                    #E8D5B7 4px,
+                    #C9A882 4px,
+                    #C9A882 6px
+                ),
+                linear-gradient(180deg, #F5E6D3 0%, #E8D5B7 50%, #D4A574 100%);
+            background-size: 100% 100%, 20px 20px, 100% 100%;
+            color: #3E2723;
+            min-height: 100vh;
+            padding: 20px;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(139, 90, 43, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(160, 120, 80, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 20%, rgba(180, 140, 100, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            gap: 20px;
+            height: calc(100vh - 40px);
+        }
+
+        header {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 0;
+            background-image: url('https://www.archaeological.org/wp-content/uploads/2018/08/photo-08.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            border-radius: 12px;
+            border: 3px solid #8B5A3C;
+            margin-bottom: 10px;
+            box-shadow: 0 8px 24px rgba(62, 39, 35, 0.2);
+            position: relative;
+            overflow: hidden;
+            min-height: 150px;
+        }
+
+        .header-overlay {
+            background: linear-gradient(135deg, rgba(139, 90, 60, 0.75) 0%, rgba(107, 68, 35, 0.85) 100%);
+            padding: 30px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            min-height: 150px;
+            justify-content: center;
+        }
+
+        .logo {
+            width: 120px;
+            height: 120px;
+            margin-bottom: 10px;
+        }
+
+        .logo svg {
+            width: 100%;
+            height: 100%;
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.4));
+        }
+
+        .header-overlay h1 {
+            color: #FFFFFF;
+            font-size: 2.5em;
+            margin-bottom: 5px;
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5), 0 0 20px rgba(0, 0, 0, 0.3);
+            font-weight: 700;
+        }
+
+        .header-overlay p {
+            color: #F5E6D3;
+            font-size: 1.2em;
+            opacity: 0.95;
+            text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.4);
+        }
+
+        .contact-link {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 12px 24px;
+            background: rgba(255, 255, 255, 0.95);
+            color: #8B5A3C;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            border: 2px solid #FFFFFF;
+        }
+
+        .contact-link:hover {
+            background: rgba(255, 255, 255, 1);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+            color: #6B4423;
+        }
+
+        .use-case-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(248, 240, 230, 0.9) 100%);
+            border: 2px solid #A07850;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(62, 39, 35, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+            transition: all 0.3s ease;
+        }
+
+        .use-case-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(62, 39, 35, 0.2);
+        }
+
+        .use-case-card h3 {
+            color: #8B5A3C;
+            font-size: 1.3em;
+            margin-bottom: 10px;
+        }
+
+        .use-case-card .location {
+            color: #A07850;
+            font-size: 0.9em;
+            opacity: 0.9;
+            margin-bottom: 10px;
+            font-style: italic;
+            font-weight: 500;
+        }
+
+        .use-case-card p {
+            color: #3E2723;
+        }
+
+        .nav-panel {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 240, 230, 0.95) 100%);
+            border-radius: 12px;
+            padding: 20px;
+            border: 2px solid #8B5A3C;
+            overflow-y: auto;
+            box-shadow: 0 4px 16px rgba(62, 39, 35, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+        }
+
+        .nav-button {
+            width: 100%;
+            padding: 15px;
+            margin-bottom: 10px;
+            background: rgba(212, 165, 116, 0.3);
+            border: 2px solid #A07850;
+            border-radius: 8px;
+            color: #5D4037;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: left;
+            position: relative;
+        }
+
+        .nav-button::before {
+            content: '▸';
+            position: absolute;
+            left: 10px;
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+
+        .nav-button:hover {
+            background: rgba(212, 165, 116, 0.5);
+            transform: translateX(5px);
+            box-shadow: 0 4px 12px rgba(139, 90, 60, 0.3);
+            padding-left: 25px;
+        }
+
+        .nav-button:hover::before {
+            opacity: 1;
+        }
+
+        .nav-button.active {
+            background: linear-gradient(135deg, #8B5A3C 0%, #A07850 100%);
+            color: #ffffff;
+            box-shadow: 0 4px 12px rgba(139, 90, 60, 0.4);
+            border-color: #6B4423;
+        }
+
+        .nav-button.active::before {
+            opacity: 1;
+            color: #ffffff;
+        }
+
+        .content-area {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 240, 230, 0.95) 100%);
+            border-radius: 12px;
+            padding: 30px;
+            border: 2px solid #8B5A3C;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            box-shadow: 0 4px 16px rgba(62, 39, 35, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+        }
+
+        .content-section {
+            display: none;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        .content-section h2 {
+            color: #8B5A3C;
+            font-size: 2em;
+            margin-bottom: 10px;
+            border-bottom: 3px solid #D4A574;
+            padding-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #A07850;
+            font-size: 0.9em;
+            opacity: 0.8;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+
+        .content-section p {
+            line-height: 1.8;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+            color: #3E2723;
+        }
+
+        .bullet-list {
+            margin: 20px 0;
+            padding-left: 25px;
+        }
+
+        .bullet-list li {
+            margin-bottom: 10px;
+            line-height: 1.6;
+            font-size: 1.05em;
+            color: #3E2723;
+            position: relative;
+            padding-left: 10px;
+        }
+
+        .bullet-list li::marker {
+            color: #8B5A3C;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, rgba(212, 165, 116, 0.2) 0%, rgba(232, 213, 183, 0.3) 100%);
+            border-left: 4px solid #8B5A3C;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+            box-shadow: inset 0 2px 4px rgba(139, 90, 60, 0.1);
+        }
+
+        .highlight-box p {
+            color: #5D4037;
+            font-weight: 600;
+            margin: 0;
+        }
+
+
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+                height: auto;
+            }
+
+            .nav-panel {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 10px;
+            }
+
+            .nav-button {
+                flex: 1;
+                min-width: 150px;
+            }
+
+            .logo {
+                width: 80px;
+                height: 80px;
+            }
+
+            .header-overlay h1 {
+                font-size: 1.8em;
+            }
+
+            header {
+                min-height: 150px;
+            }
+
+            .header-overlay {
+                min-height: 150px;
+                padding: 20px 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-overlay">
+                <div class="logo">
+                    <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Robot Head -->
+                        <rect x="70" y="30" width="60" height="40" rx="6" fill="#FFFFFF" stroke="#8B5A3C" stroke-width="3"/>
+                        <!-- Eyes -->
+                        <circle cx="85" cy="50" r="8" fill="#8B5A3C"/>
+                        <circle cx="115" cy="50" r="8" fill="#8B5A3C"/>
+                        <circle cx="85" cy="50" r="4" fill="#FFFFFF"/>
+                        <circle cx="115" cy="50" r="4" fill="#FFFFFF"/>
+                        <!-- Antenna -->
+                        <line x1="100" y1="30" x2="100" y2="15" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round"/>
+                        <circle cx="100" cy="15" r="4" fill="#FFFFFF"/>
+                        <!-- Robot Body -->
+                        <rect x="60" y="60" width="80" height="100" rx="8" fill="#FFFFFF" stroke="#8B5A3C" stroke-width="3"/>
+                        <!-- Left Arm -->
+                        <rect x="50" y="80" width="20" height="50" rx="4" fill="#FFFFFF" stroke="#8B5A3C" stroke-width="2"/>
+                        <!-- Right Arm -->
+                        <rect x="130" y="80" width="20" height="50" rx="4" fill="#FFFFFF" stroke="#8B5A3C" stroke-width="2"/>
+                        <!-- Legs -->
+                        <rect x="70" y="160" width="25" height="30" rx="4" fill="#FFFFFF" stroke="#8B5A3C" stroke-width="2"/>
+                        <rect x="105" y="160" width="25" height="30" rx="4" fill="#FFFFFF" stroke="#8B5A3C" stroke-width="2"/>
+                    </svg>
+                </div>
+                <h1>Archaebot – Robot Archaeologist</h1>
+                <a href="mailto:contact-archaebot@googlegroups.com" class="contact-link">Contact Us</a>
+            </div>
+        </header>
+
+        <div class="nav-panel">
+            <button class="nav-button active" onclick="showSection('problem')">Problem & Mission</button>
+            <button class="nav-button" onclick="showSection('why')">Why Archaebot?</button>
+            <button class="nav-button" onclick="showSection('tools')">Robot Tools & Sensors</button>
+            <button class="nav-button" onclick="showSection('dig')">How a Dig Works</button>
+            <button class="nav-button" onclick="showSection('impact')">Impact & Future Ideas</button>
+            <button class="nav-button" onclick="showSection('usecases')">Use Cases & Examples</button>
+        </div>
+
+        <div class="content-area">
+            <!-- Problem & Mission -->
+            <div id="problem" class="content-section active">
+                <h2>Problem & Mission</h2>
+                <p>
+                    Archaeology is a delicate science that requires careful excavation to preserve historical artifacts. Traditional archaeological digs face significant challenges: they are time-consuming, expensive, and can damage fragile artifacts during manual excavation. Many important sites remain unexplored due to these limitations.
+                </p>
+                <p>
+                    Our mission is to revolutionize archaeology through robotics. Archaebot combines precision robotics with advanced sensors to locate, identify, and carefully extract artifacts without human contact, preserving them for future generations while making archaeological exploration more accessible and efficient.
+                </p>
+                <ul class="bullet-list">
+                    <li>Reduce excavation time by up to 70% compared to traditional methods</li>
+                    <li>Minimize artifact damage through non-contact extraction</li>
+                    <li>Enable exploration of previously inaccessible sites</li>
+                    <li>Make archaeology more accessible to researchers worldwide</li>
+                </ul>
+                <div class="highlight-box">
+                    <p><strong>Mission:</strong> To preserve our past while advancing the future of archaeological discovery through innovative robotics technology.</p>
+                </div>
+            </div>
+
+            <!-- Why Archaebot? -->
+            <div id="why" class="content-section">
+                <h2>Why Archaebot?</h2>
+                <p>
+                    Archaebot addresses critical gaps in modern archaeology. While drones and ground-penetrating radar help locate sites, there's no integrated robotic system that can autonomously excavate and preserve artifacts. Current methods still rely heavily on human archaeologists using hand tools, which limits both speed and precision.
+                </p>
+                <p>
+                    Our solution is unique because it combines multiple technologies into one cohesive system: ground-penetrating sensors for detection, precision robotic arms for extraction, and AI-powered identification to categorize artifacts in real-time. This integrated approach has never been achieved before in archaeological robotics.
+                </p>
+                <ul class="bullet-list">
+                    <li>First fully integrated robotic archaeological system</li>
+                    <li>AI-powered artifact recognition and classification</li>
+                    <li>Adaptive excavation strategies for different soil types</li>
+                    <li>Real-time data collection and documentation</li>
+                </ul>
+                <div class="highlight-box">
+                    <p><strong>Innovation:</strong> Archaebot is the first robot designed specifically for complete archaeological excavation workflows, from detection to preservation.</p>
+                </div>
+            </div>
+
+            <!-- Robot Tools & Sensors -->
+            <div id="tools" class="content-section">
+                <h2>Robot Tools & Sensors</h2>
+                <p>
+                    Archaebot is equipped with a sophisticated array of sensors and tools designed specifically for archaeological work. The ground-penetrating radar (GPR) system can detect objects up to 3 meters deep, while the metal detector array identifies metallic artifacts. The LiDAR scanner creates precise 3D maps of the excavation site.
+                </p>
+                <p>
+                    For extraction, Archaebot uses a multi-jointed robotic arm with interchangeable tools: a precision scoop for delicate artifacts, a brush system for cleaning, and a vacuum extraction system for loose materials. All tools are designed to minimize contact and preserve artifact integrity.
+                </p>
+                <ul class="bullet-list">
+                    <li>Ground-Penetrating Radar (GPR) for deep detection</li>
+                    <li>Metal detector array for metallic artifacts</li>
+                    <li>LiDAR scanner for 3D site mapping</li>
+                    <li>Precision robotic arm with interchangeable tools</li>
+                    <li>High-resolution cameras for documentation</li>
+                    <li>Environmental sensors (temperature, humidity, pH)</li>
+                </ul>
+                <div class="highlight-box">
+                    <p><strong>Technology:</strong> Every sensor and tool is purpose-built for archaeology, ensuring maximum precision and minimal impact on historical sites.</p>
+                </div>
+            </div>
+
+            <!-- How a Dig Works -->
+            <div id="dig" class="content-section">
+                <h2>How a Dig Works</h2>
+                <p>
+                    The Archaebot excavation process follows a carefully designed workflow. First, the robot performs a comprehensive scan of the designated area using its GPR and metal detection systems. This creates a detailed map of potential artifact locations without disturbing the soil.
+                </p>
+                <p>
+                    Once targets are identified, the robot plans an optimal excavation strategy based on artifact depth, soil type, and estimated fragility. The robotic arm then carefully removes soil layer by layer, continuously scanning to avoid damage. Each artifact is photographed, cataloged, and carefully extracted using the appropriate tool for its material type.
+                </p>
+                <ul class="bullet-list">
+                    <li>Initial site scanning and mapping (non-invasive)</li>
+                    <li>Target identification and prioritization</li>
+                    <li>Layer-by-layer soil removal</li>
+                    <li>Continuous scanning during excavation</li>
+                    <li>Artifact documentation and extraction</li>
+                    <li>Real-time cataloging and preservation</li>
+                </ul>
+                <div class="highlight-box">
+                    <p><strong>Process:</strong> Every excavation follows a systematic, data-driven approach that maximizes discovery while preserving historical integrity.</p>
+                </div>
+            </div>
+
+            <!-- Impact & Future Ideas -->
+            <div id="impact" class="content-section">
+                <h2>Impact & Future Ideas</h2>
+                <p>
+                    Archaebot has the potential to transform archaeology on a global scale. By making excavations faster, safer, and more accessible, we can explore more sites, preserve more artifacts, and learn more about human history. This technology could be particularly valuable in areas where traditional archaeology is difficult, such as underwater sites, remote locations, or areas with environmental hazards.
+                </p>
+                <p>
+                    Looking to the future, we envision Archaebot swarms working collaboratively on large sites, AI systems that can predict artifact locations based on historical patterns, and integration with virtual reality to allow researchers worldwide to participate in excavations remotely. We also plan to develop specialized versions for different environments, from desert archaeology to underwater exploration.
+                </p>
+                <ul class="bullet-list">
+                    <li>Enable exploration of previously inaccessible sites</li>
+                    <li>Accelerate archaeological research worldwide</li>
+                    <li>Preserve artifacts with minimal damage</li>
+                    <li>Make archaeology more accessible and affordable</li>
+                    <li>Support collaborative research through data sharing</li>
+                </ul>
+                <div class="highlight-box">
+                    <p><strong>Future:</strong> Archaebot is just the beginning. We envision a future where robotics and AI work together to unlock the secrets of our past while preserving them for generations to come.</p>
+                </div>
+            </div>
+
+            <!-- Use Cases & Examples -->
+            <div id="usecases" class="content-section">
+                <h2>Use Cases & Examples</h2>
+                <p>
+                    Archaebot can be deployed in a variety of archaeological scenarios, each presenting unique challenges and opportunities. Here are some hypothetical use cases that demonstrate the versatility and impact of our robotic archaeologist.
+                </p>
+
+                <div class="use-case-card">
+                    <h3>Desert Excavation: Ancient Trade Route Discovery</h3>
+                    <div class="location">Location: Sahara Desert, North Africa</div>
+                    <p>
+                        Archaebot was deployed to explore a suspected ancient trade route that connected civilizations across the Sahara. The harsh desert environment made traditional excavation difficult, but Archaebot's GPR system successfully identified buried structures and artifacts at depths of up to 2.5 meters. Over a 3-week period, the robot discovered 47 artifacts including pottery fragments, metal tools, and preserved textiles that provided new insights into ancient trade networks.
+                    </p>
+                    <ul class="bullet-list">
+                        <li>Discovered 47 artifacts in 3 weeks (traditional methods would take 3+ months)</li>
+                        <li>Identified 3 previously unknown settlement sites</li>
+                        <li>Preserved fragile textiles that would have disintegrated with manual excavation</li>
+                    </ul>
+                </div>
+
+                <div class="use-case-card">
+                    <h3>Underwater Archaeology: Shipwreck Exploration</h3>
+                    <div class="location">Location: Mediterranean Sea, 50 meters depth</div>
+                    <p>
+                        A specialized underwater version of Archaebot was used to explore a 2,000-year-old Roman shipwreck. The robot's waterproof sensors and precision tools allowed archaeologists to map the entire wreck site and carefully extract artifacts without disturbing the delicate marine environment. The robot documented over 200 artifacts including amphorae, coins, and personal items that told the story of ancient maritime trade.
+                    </p>
+                    <ul class="bullet-list">
+                        <li>Mapped complete shipwreck site in 2 days</li>
+                        <li>Extracted 200+ artifacts with zero damage</li>
+                        <li>Created detailed 3D model for virtual museum exhibition</li>
+                    </ul>
+                </div>
+
+                <div class="use-case-card">
+                    <h3>Urban Archaeology: Historical City Center</h3>
+                    <div class="location">Location: Downtown Athens, Greece</div>
+                    <p>
+                        Before construction of a new building, Archaebot was used to conduct a comprehensive archaeological survey of the site. The robot's non-invasive scanning identified multiple layers of historical occupation, from modern times back to ancient Greek periods. This allowed archaeologists to create a complete site map and prioritize which areas needed careful excavation, saving both time and preserving important historical context.
+                    </p>
+                    <ul class="bullet-list">
+                        <li>Completed full site survey in 1 week (normally 2-3 months)</li>
+                        <li>Identified 5 distinct historical periods at the site</li>
+                        <li>Enabled construction to proceed with minimal delays</li>
+                    </ul>
+                </div>
+
+                <div class="use-case-card">
+                    <h3>Remote Site Exploration: Mountain Cave System</h3>
+                    <div class="location">Location: Himalayan Mountains, Nepal</div>
+                    <p>
+                        Archaebot was deployed to explore a series of caves that were difficult for human archaeologists to access safely. The robot's compact design and advanced sensors allowed it to navigate narrow passages and identify ancient cave paintings, tools, and burial sites. The discoveries revealed new information about early human migration patterns in the region.
+                    </p>
+                    <ul class="bullet-list">
+                        <li>Explored 12 caves that were previously inaccessible</li>
+                        <li>Documented 150+ cave paintings with high-resolution imaging</li>
+                        <li>Discovered evidence of human habitation dating back 8,000 years</li>
+                    </ul>
+                </div>
+
+                <div class="highlight-box">
+                    <p><strong>Impact:</strong> These examples demonstrate how Archaebot can adapt to different environments and challenges, making archaeological discovery faster, safer, and more comprehensive than ever before.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showSection(sectionId) {
+            // Hide all sections
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Show selected section
+            document.getElementById(sectionId).classList.add('active');
+            
+            // Update button states
+            document.querySelectorAll('.nav-button').forEach(button => {
+                button.classList.remove('active');
+            });
+            event.target.classList.add('active');
+        }
+    </script>
+</body>
+</html>
